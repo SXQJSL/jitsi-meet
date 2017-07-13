@@ -545,6 +545,17 @@ export default {
     videoMuted: false,
     isSharingScreen: false,
     isDesktopSharingEnabled: false,
+    /**
+     * Set to <tt>true</tt> if the desktop sharing functionality has been
+     * explicitly disabled in the config.
+     */
+    desktopSharingDisabledByConfig: false,
+    /**
+     * The text displayed when the desktop sharing button is disabled through
+     * the config. The value is set through
+     * {@link interfaceConfig.DESKTOP_SHARING_BUTTON_DISABLED_TOOLTIP}.
+     */
+    desktopSharingDisabledTooltip: undefined,
     /*
      * Whether the local "raisedHand" flag is on.
      */
@@ -601,8 +612,15 @@ export default {
                     ConnectionEvents.CONNECTION_FAILED,
                     _connectionFailedHandler);
                 APP.connection = connection = con;
-                this.isDesktopSharingEnabled =
-                    JitsiMeetJS.isDesktopSharingEnabled();
+
+                // Desktop sharing related stuff:
+                this.desktopSharingDisabledByConfig
+                    = config.disableDesktopSharing;
+                this.isDesktopSharingEnabled
+                    = !this.desktopSharingDisabledByConfig
+                        && JitsiMeetJS.isDesktopSharingEnabled();
+                this.desktopSharingDisabledTooltip
+                    = interfaceConfig.DESKTOP_SHARING_BUTTON_DISABLED_TOOLTIP;
                 eventEmitter.emit(
                     JitsiMeetConferenceEvents.DESKTOP_SHARING_ENABLED_CHANGED,
                     this.isDesktopSharingEnabled);

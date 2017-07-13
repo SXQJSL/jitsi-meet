@@ -235,13 +235,24 @@ export function setProfileButtonUnclickable(unclickable: boolean): Function {
 export function showDesktopSharingButton(): Function {
     return (dispatch: Dispatch<*>) => {
         const buttonName = 'desktop';
+        const disabledByConfig
+            = APP.conference.desktopSharingDisabledByConfig;
+        const disabledTooltipText
+            = APP.conference.desktopSharingDisabledTooltip;
         const visible
-            = APP.conference.isDesktopSharingEnabled
-                && UIUtil.isButtonEnabled(buttonName);
+            = UIUtil.isButtonEnabled(buttonName)
+                && (APP.conference.isDesktopSharingEnabled
+                        || (disabledByConfig && disabledTooltipText));
 
-        dispatch(setToolbarButton(buttonName, {
-            hidden: !visible
-        }));
+        const newState = {
+            enabled: APP.conference.isDesktopSharingEnabled,
+            hidden: !visible,
+            tooltipText:
+                disabledByConfig && disabledTooltipText
+                    ? disabledTooltipText : undefined
+        };
+
+        dispatch(setToolbarButton(buttonName, newState));
     };
 }
 
